@@ -7,6 +7,7 @@ import Register from '../pages/Register'
 import UserDashboard from '../pages/UserDashboard'
 import IsAdmin from '../validation/IsAdmin'
 import JobDetails from '../pages/JobDetails'
+import UserPanelJobDetails from '../pages/UserPanelJobDetails'
 
 const AllRoute = () => {
   return (
@@ -18,6 +19,7 @@ const AllRoute = () => {
         <Route path='/admindashboard' element={<IsAdmin><AdminDashboard/></IsAdmin>}></Route>
         <Route path='/userdashboard' element={<UserDashboard/>}></Route>
         <Route path='/jobdetail/:id' element={<JobDetails/>}></Route>
+        <Route path='/userpaneljobdetail/:id' element={<UserPanelJobDetails/>}></Route>
       </Routes>
     </div>
   )

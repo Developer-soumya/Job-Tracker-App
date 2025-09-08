@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaSearch, FaUserCircle, FaHome, FaBriefcase } from "react-icons/fa";
 import { useNavigate } from "react-router";
@@ -9,53 +9,67 @@ const navItems = [
 ];
 
 const Sidebar = ({ sidebarTab, setSidebarTab }) => (
-  <aside className="w-64 bg-blue-800 shadow-lg p-6 hidden md:flex flex-col justify-between">
-    <div>
-      <div className="text-3xl font-extrabold text-indigo-600 mb-8">JobHunt</div>
-      <nav className="flex flex-col gap-4">
+  <motion.aside
+    initial={{ x: -100, opacity: 0 }}
+    animate={{ x: 0, opacity: 1 }}
+    transition={{ duration: 0.5 }}
+    className="hidden md:flex flex-col justify-between min-h-screen text-white w-64 bg-gradient-to-b from-indigo-600 to-blue-500 shadow-2xl"
+  >
+    <div className="p-6">
+      <div className="text-4xl font-extrabold text-white mb-10 tracking-tight">
+        Job Tracker
+      </div>
+      <nav className="flex flex-col gap-3">
         {navItems.map((item) => (
-          <button
+          <motion.button
             key={item.id}
             onClick={() => setSidebarTab(item.id)}
-            className={`text-left px-4 py-2 rounded-lg font-medium ${
-              sidebarTab === item.id ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-lg transition-all duration-300 ${
+              sidebarTab === item.id
+                ? "bg-white text-indigo-900 shadow-md"
+                : "hover:bg-indigo-700 hover:shadow-lg"
             }`}
           >
-            {item.label}
-          </button>
+            {item.icon} {item.label}
+          </motion.button>
         ))}
       </nav>
     </div>
-    <div className="text-sm text-gray-500">&copy; 2025 JobHunt</div>
-  </aside>
+    <div className="p-6 text-sm text-indigo-200 tracking-wide">
+      &copy; 2025 Job Tracker
+    </div>
+  </motion.aside>
 );
 
 const BottomNav = ({ sidebarTab, setSidebarTab }) => (
-  <nav className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-md flex justify-around py-2 md:hidden z-40">
+  <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-indigo-100 shadow-lg flex justify-around py-3 md:hidden z-40">
     {navItems.map((item) => (
-      <button
+      <motion.button
         key={item.id}
         onClick={() => setSidebarTab(item.id)}
-        className={`flex flex-col items-center text-sm ${
-          sidebarTab === item.id ? "text-indigo-600" : "text-gray-500"
+        whileTap={{ scale: 0.9 }}
+        className={`flex flex-col items-center text-sm font-medium ${
+          sidebarTab === item.id ? "text-indigo-600" : "text-gray-600"
         }`}
       >
         {item.icon}
         {item.label.split(" ")[0]}
-      </button>
+      </motion.button>
     ))}
   </nav>
 );
 
 const UserDashboard = () => {
-  const [jobList, setJobList] = useState([]);
+  const [sidebarTab, setSidebarTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [jobList, setJobList] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [appliedJobs, setAppliedJobs] = useState([]);
-  const [sidebarTab, setSidebarTab] = useState("all");
   const [resumeFile, setResumeFile] = useState(null);
   const [editingApplication, setEditingApplication] = useState(null);
   const navigate = useNavigate();
@@ -147,76 +161,157 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-50 to-white font-sans">
-      <nav className="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
-        <div className="text-xl font-bold text-indigo-600 md:text-2xl">JobHunt</div>
-        <div className="flex items-center gap-4">
-          <div className="relative hidden md:block w-full max-w-md">
-            <FaSearch className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search for jobs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <FaSearch
-              size={20}
-              onClick={() => setShowSearchInput(!showSearchInput)}
-              className="text-gray-500 cursor-pointer md:hidden"
-            />
-            <div className="relative">
-              <FaUserCircle
-                size={24}
-                className="text-indigo-600 cursor-pointer"
-                onClick={() => setShowProfile(!showProfile)}
-              />
-              {showProfile && (
-                <div className="absolute right-0 top-10 bg-white shadow-xl rounded-md overflow-hidden z-10">
-                  <button
-                    onClick={() => {
-                      localStorage.removeItem("Role");
-                      navigate("/login");
-                    }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 flex flex-col">
+      <div className="flex flex-1">
+        <div className="bg-blue-800">
+          <Sidebar sidebarTab={sidebarTab} setSidebarTab={setSidebarTab} />
+        </div>
+        <div className="flex-1 p-4 pb-16 md:pb-4">
+          <nav className="flex justify-end bg-white p-3 rounded shadow">
+            <div className="flex items-center gap-6">
+              <motion.div
+                className="relative hidden md:block w-full max-w-lg"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <FaSearch className="absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search for jobs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-2 border border-indigo-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-indigo-50 transition-all duration-300"
+                />
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <FaSearch
+                  size={22}
+                  onClick={() => setShowSearchInput(!showSearchInput)}
+                  className="text-indigo-600 cursor-pointer md:hidden"
+                />
+              </motion.div>
+              <div className="relative">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <FaUserCircle
+                    size={28}
+                    className="text-indigo-600 cursor-pointer"
+                    onClick={() => setShowProfile(!showProfile)}
+                  />
+                </motion.div>
+                <AnimatePresence>
+                  {showProfile && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 top-12 bg-white shadow-2xl rounded-lg overflow-hidden z-10 border border-indigo-100"
+                    >
+                      <button
+                        onClick={() => {
+                          localStorage.removeItem("Role");
+                          navigate("/login");
+                        }}
+                        className="block w-full text-left px-6 py-3 hover:bg-indigo-50 text-sm font-medium text-gray-700 transition-colors duration-200"
+                      >
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                        <AnimatePresence>
+                            {showProfile && (
+                              <motion.div
+                                initial={{ x: "100%" }}
+                                animate={{ x: 0 }}
+                                exit={{ x: "100%" }}
+                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                className="fixed top-0 right-0 w-full sm:w-96 h-full bg-white shadow-lg z-50 p-6 overflow-y-auto"
+                              >
+                                <div className="flex justify-between items-center mb-4">
+                                  <h2 className="text-xl font-semibold">Profile</h2>
+                                  <FaTimes
+                                    className="text-gray-500 cursor-pointer"
+                                    onClick={() => setShowProfile(false)}
+                                  />
+                                </div>
+                  
+                                <div className="flex flex-col items-center text-center">
+                                  {adminData.profileImage ? (
+                                    <img
+                                      src={adminData.profileImage}
+                                      alt="Profile"
+                                      className="w-24 h-24 rounded-full mb-2 object-cover"
+                                    />
+                                  ) : (
+                                    <CgProfile className="text-6xl text-gray-400 mb-2" />
+                                  )}
+                                  <label className="text-sm text-blue-600 cursor-pointer">
+                                    Upload PNG Only
+                                    <input
+                                      type="file"
+                                      accept="image/png"
+                                      onChange={handleImageUpload}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                  <div>
+                                    <p className="text-lg font-semibold mt-2 text-center">{adminData.firstName}</p>
+                                    <p className="text-sm text-gray-600">{adminData.profession}</p>
+                                    <p className="text-sm text-gray-600">{adminData.email}</p>
+                                    <p className="text-sm text-gray-600">{adminData.phone}</p>
+                                  </div>
+                                </div>
+                  
+                                <div className="mt-6 space-y-2">
+                                  <button
+                                    onClick={logout}
+                                    className="flex items-center justify-center gap-2 py-2 bg-red-500 text-white rounded-md w-full"
+                                  >
+                                    <FaSignOutAlt /> Logout
+                                  </button>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
-        </div>
-      </nav>
+          </nav>
 
-      {showSearchInput && (
-        <div className="bg-white px-4 py-2 shadow-md md:hidden">
-          <div className="relative w-full">
-            <FaSearch className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search for jobs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow focus:outline-none"
-            />
-          </div>
-        </div>
-      )}
+          <AnimatePresence>
+            {showSearchInput && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="bg-white px-6 py-3 shadow-md md:hidden"
+              >
+                <div className="relative w-full">
+                  <FaSearch className="absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search for jobs..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-indigo-200 rounded-lg shadow-sm focus:outline-none bg-indigo-50"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      <div className="flex-1 flex md:flex-row">
-        <Sidebar sidebarTab={sidebarTab} setSidebarTab={setSidebarTab} />
-        <div className="flex-1">
-          <section className="p-6 pb-16 md:pb-6">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">
+          <div className="flex-1 p-8">
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl font-bold text-gray-900 mb-8 tracking-tight"
+            >
               {sidebarTab === "all" ? "💼 Available Jobs" : "📝 My Applications"}
-            </h2>
-
+            </motion.h2>
             {sidebarTab === "all" ? (
               filteredJobs.length === 0 ? (
-                <p className="text-gray-500">No jobs found.</p>
+                <p className="text-gray-500 text-lg font-medium">No jobs found.</p>
               ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredJobs.map((job, index) => (
@@ -226,6 +321,7 @@ const UserDashboard = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                       className="bg-white p-5 rounded-xl border shadow hover:shadow-md transition"
+                      onClick={()=>{navigate(`/userpaneljobdetail/${job.id}`)}}
                     >
                       {job.image && <img src={job.image} alt="Company" className="w-full h-40 object-cover rounded-md mb-4" />}
                       <h3 className="text-xl font-semibold text-indigo-700">{job.title}</h3>
@@ -245,7 +341,7 @@ const UserDashboard = () => {
               )
             ) : (
               appliedJobs.length === 0 ? (
-                <p className="text-gray-500">You haven’t applied to any jobs yet.</p>
+                <p className="text-gray-500 text-lg font-medium">You haven’t applied to any jobs yet.</p>
               ) : (
                 <ul className="space-y-6">
                   {appliedJobs.map((app, idx) => (
@@ -278,12 +374,10 @@ const UserDashboard = () => {
                 </ul>
               )
             )}
-          </section>
+          </div>
         </div>
       </div>
-
       <BottomNav sidebarTab={sidebarTab} setSidebarTab={setSidebarTab} />
-
       <AnimatePresence>
         {showForm && (
           <motion.div
